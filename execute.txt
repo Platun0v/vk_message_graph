@@ -1,0 +1,30 @@
+var peer_id = %s;
+var count = %s;
+var start = %s;
+count = count + start;
+var offset = start;
+var arr = [];
+var n = 0;
+while (offset < count) {
+    arr = arr + API.messages.getHistory({"peer_id": peer_id, "count": 100, "offset": offset})["items"];
+    n = n + 1;
+    offset = offset + 100;
+    if (n == 24) {
+        if (offset < count) {
+            var diff = count - offset;
+            if (diff > 100) {
+                diff = 100;
+            }
+            arr = arr + API.messages.getHistory({"peer_id": peer_id, "count": diff, "offset": offset})["items"];
+        }
+        return arr;
+    }
+}
+if (offset < count) {
+    var diff = count - offset;
+    if (diff > 100) {
+        diff = 100;
+    }
+    arr = arr + API.messages.getHistory({"peer_id": peer_id, "count": diff, "offset": offset})["items"];
+}
+return arr;
