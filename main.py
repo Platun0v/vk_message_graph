@@ -203,14 +203,23 @@ def auth():
         return True
 
     login = read(s_in='Введите логин: ')
-    password = read(s_in='Введите пароль: ', s_out='Не удалось авторизоваться, попробуй еще раз...',
-                    check_fun=check_pass, kwargs={'login': login}, )
+    password = read(s_in='Введите пароль: ')#, s_out='Не удалось авторизоваться, попробуй еще раз...',
+                    #check_fun=check_pass, kwargs={'login': login}, )
+    
+    def auth_handler():
+        key = input("Введите код авторизации: ")
+        remember_device = True
+        return key, remember_device
+    
+    vk_session = VkApi(
+        login, password,
+        app_id=2685278,
+        auth_handler=auth_handler
+    )
+    vk_session.auth()
 
-    resp = requests.get(auth_url.format(login=login, password=password)).json()
-
-    vk = VkApi(token=resp['access_token'])
-    api = vk.get_api()
-    return api, resp['user_id']
+    api = vk_session.get_api()
+    return api, vk_session.token['user_id']
 
 
 def main():
